@@ -1,0 +1,9 @@
+# .gitignore
+.pio/
+.vscode/
+.DS_Store
+*.bin
+*.elf
+*.hex
+*.map
+.agent/
