@@ -1,0 +1,2 @@
+# Este arquivo garante que a pasta lib seja incluída no backup do Git.
+# Esta pasta é usada para bibliotecas locais específicas do projeto no PlatformIO.

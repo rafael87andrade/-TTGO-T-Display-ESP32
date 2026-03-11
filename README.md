@@ -17,16 +17,16 @@ A multi-functional WiFi assessment and analysis tool built for the ESP32 (TTGO T
 
 ## Software Dependencies
 - **PlatformIO** (VS Code recommended)
-- **TFT_eSPI** Library (Configured for ST7789V, 135x240)
-- Built-in ESP32 libraries (WiFi, WebServer, DNSServer, LittleFS)
+- **TFT_eSPI** Library (Configured for ST7789V, 135x240 via build flags)
+- Built-in ESP32 libraries (WiFi, WebServer, DNSServer, mDNS)
 
 ## Setup & Compilation
 1. Clone the repository.
 2. Open the project folder in **PlatformIO**.
 3. All dependencies are automatically resolved via `platformio.ini`.
-4. Compile the project using `pio run` or using the UI checkmark.
+4. Compile the project using `pio run`.
 5. Upload to your TTGO T-Display via USB (`pio run -t upload`).
-6. Build and upload LittleFS filesystem using `pio run -t buildfs` and `pio run -t uploadfs` (required to serve PCAP files to the Web Dashboard).
+6. As capturas de pacotes (PCAP) são armazenadas temporariamente na memória RAM e podem ser baixadas via Web Dashboard ou enviadas via Serial.
 
 ## Disclaimer
 This project is for educational and research purposes only. Only test on networks you own or have explicit permission to audit.

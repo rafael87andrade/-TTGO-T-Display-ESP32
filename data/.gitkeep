@@ -1,0 +1,2 @@
+# Este arquivo garante que a pasta data seja incluída no backup do Git.
+# Esta pasta é usada para arquivos do sistema de arquivos LittleFS/SPIFFS no PlatformIO.
