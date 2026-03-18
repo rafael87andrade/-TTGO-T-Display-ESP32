@@ -9,7 +9,6 @@
 #include "wifi_scan.h"
 #include <Arduino.h>
 
-
 // ── Sniffer state ──────────────────────────────
 struct SnifferStats {
   uint32_t totalPackets;
@@ -55,17 +54,7 @@ static void handshakeSnifferCb(void *buf, wifi_promiscuous_pkt_type_t type) {
   uint8_t frameType = (frameCtrl & 0x0C) >> 2;
   uint8_t frameSubType = (frameCtrl >> 4) & 0x0F;
 
-  // Detect deauth frames (type=0, subtype=0x0C)
-  if (frameType == 0 && frameSubType == 0x0C) {
-    snifferStats.deauthDetected++;
-    return;
-  }
-
-  // Only process data frames (type=2)
-  if (frameType != 2)
-    return;
-
-  // Check if this frame matches our target BSSID
+  // 1. Filter by Target BSSID (Addr1, Addr2 or Addr3)
   const uint8_t *addr1 = &payload[4];
   const uint8_t *addr2 = &payload[10];
   const uint8_t *addr3 = &payload[16];
@@ -78,6 +67,30 @@ static void handshakeSnifferCb(void *buf, wifi_promiscuous_pkt_type_t type) {
     if (!matchesBSSID)
       return;
   }
+
+  // 2. Handle Management Frames (Type 0)
+  if (frameType == 0) {
+    // Detect deauth frames
+    if (frameSubType == 0x0C) {
+      snifferStats.deauthDetected++;
+      // Also save deauths to PCAP for completeness
+      pcapWritePacket(payload, len);
+      return;
+    }
+
+    // Capture crucial frames for Hashcat (ESSID/Auth)
+    // 0x08: Beacon, 0x05: Probe Resp, 0x0B: Auth, 0x00: Assoc Req, 0x01: Assoc
+    // Resp
+    if (frameSubType == 0x08 || frameSubType == 0x05 || frameSubType == 0x0B ||
+        frameSubType == 0x00 || frameSubType == 0x01) {
+      pcapWritePacket(payload, len);
+    }
+    return;
+  }
+
+  // 3. Process Data Frames (Type 2) for Handshakes
+  if (frameType != 2)
+    return;
 
   // Look for LLC/SNAP EAPOL header in payload
   // Data frame header is at least 24 bytes, QoS adds 2
